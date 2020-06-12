@@ -25,6 +25,7 @@ h2 {
     padding: 0;
     font-size: 50px;
     text-decoration: underline;
+    
 }
 header {
     background-color: #8c2fe4;
@@ -42,7 +43,6 @@ header h1 {
 }
 header h2 {
     text-transform: uppercase;
-   
 }
 #container-global {
    
@@ -57,8 +57,8 @@ header h2 {
 #container {
    
     background-color: whitesmoke;
-    width: 60%;
-    height: auto;
+    width: 40%;
+    min-height: auto;
     box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.35);
     padding: 20px;
 }
@@ -106,7 +106,7 @@ form {
     width: auto;
     display: block;
     line-height: 20px;
-    margin-top: 20px;
+    margin-bottom: 20px;
     padding:  10px 20px;
     border-radius: 5px;
     background-color: #16122c;

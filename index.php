@@ -6,53 +6,45 @@ $message = '';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $MIMEVERIF = array("jpg" => "image/jpg", "jpeg" => "image/jpeg", "gif" => "image/gif", "png" => "image/png", 'bmp' => 'image/bmp', 'tiff|tif' => 'image/tiff', 'ico' => 'image/x-icon');
-    
-    $fileInfo = finfo_open(FILEINFO_MIME_TYPE);
-    $verifFiles = finfo_file($fileInfo, $_FILES['file']['tmp_name']);
-    if (!in_array($verifFiles, $MIMEVERIF)) {
-        $message = 'Votre Format de fichier ou taille (Max 2 Mo) n\'est pas le bon ';
+
+    if ($_FILES['file']['error'] == 4) {
+        $message = ' Aucun fichier n\'a été téléchargé.';
+    } else {
+        $filetmpname = $_FILES["file"]["tmp_name"];
+        $filemime = mime_content_type($filetmpname);
+
+        if (in_array($filemime, $MIMEVERIF)) {
+
+            if (isset($_FILES["file"]) && $_FILES['file']['error'] == 0) {
+
+                $filename =  $_FILES["file"]["name"];
+                $filetype = $_FILES["file"]["type"];
+                $filesize = $_FILES["file"]["size"];
+                $filestmp = $_FILES["file"]["tmp_name"];
+                $fileserror = $_FILES["file"]["error"];
+                $extension = pathinfo($filename, PATHINFO_EXTENSION);
+
+                $sizeUpload = 3 * 1024 * 1024;
+                if ($filesize > $sizeUpload) {
+                    $message = "La taille de l'image est supérieure à 3 Mo, veuillez réessayer ";
+                } else if (in_array($filetype, $MIMEVERIF)) {
+
+                    move_uploaded_file($filestmp, $path . uniqid() . '.' .  $extension);
+                    $message = "Votre image a été téléchargé avec succès.";
+                } else {
+                    $message = " Il y a eu un problème de téléchargement de votre image. Veuillez réessayer.";
+                }
+            }
+        } else {
+            $message = 'Votre Format de fichier ou taille (Max 2 Mo) n\'est pas le bon ';
+        }
     }
-    else {
-    if (isset($_FILES["file"]) && $_FILES['file']['error'] == 0) {
-       
-        $filename =  $_FILES["file"]["name"];
-        $filetype = $_FILES["file"]["type"];
-        $filesize = $_FILES["file"]["size"];
-        $filestmp = $_FILES["file"]["tmp_name"];
-        $fileserror = $_FILES["file"]["error"];
-        $extension = pathinfo($filename, PATHINFO_EXTENSION);
-
-        $sizeUpload = 3 * 1024 * 1024;
-        if ($filesize > $sizeUpload) {
-            $message = "La taille de l'image est supérieure à 3 Mo, veuillez réessayer ";
-        }
-        else if (in_array($filetype, $MIMEVERIF)) {
-          
-                move_uploaded_file($filestmp, $path . uniqid() . '.' .  $extension);
-                $message = "Votre image a été téléchargé avec succès.";
-          
-        } else {
-            $message = " Il y a eu un problème de téléchargement de votre image. Veuillez réessayer.";
-        }
-        } else {
-            $message = 'error : ' . $_FILES['file']['error'];
-        }
-
-     
-    } 
 }
-
-
-
 
 
 ?>
 
-<!-- 
-if (mime_content_type($_FILES["file"]["tmp_name"]) !== in_array($MIMEVERIF, $_FILES)) {
 
-echo 'mettre bon fichier ';
-} -->
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -89,9 +81,9 @@ echo 'mettre bon fichier ';
 
                 <form action="index.php" method="POST" enctype="multipart/form-data">
 
-                    <input type="file" data-preview=".preview" name="file" id="file" value="100000">
-                    <input type="submit" name="upload" value="upload" id="uploadbtn">
 
+                    <input type="submit" name="upload" value="upload" id="uploadbtn">
+                    <input type="file" data-preview=".preview" name="file" id="file" value="100000">
                 </form>
             </div>
 
